@@ -9,8 +9,11 @@ services:
       - MONGO_LOG_DIR=/dev/null
     volumes:
       - ./data/mongo:/data/db
-    ports:
-        - 27017:27017
   nba_scraping:
-    build: .
+    build: ./scrap
     container_name: nba_scraping
+  dashboard:
+    build: ./dash
+    container_name: dashboard
+    ports:
+        - 8050:8050
