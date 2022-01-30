@@ -21,7 +21,7 @@ def generate_page():
     data3 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "PTS"]]
     data4 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "AST"]]
     data5 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "TOV"]]
-    df_joueur = pd.DataFrame(list)
+    #df_joueur = pd.DataFrame(list)
 
     # Création de graphique pour l'affichage des données
     bar1 = px.bar(data1, x = "player", y = "PTS", barmode="group", facet_col="Season") 
@@ -83,11 +83,11 @@ def generate_page():
                     options = collection.distinct('player'),
                     style={"textAlign" : "center", "fontSize": "20px", "color": "black", "marginBottom" : "20px"}
                 ),
-                dash_table.DataTable( 
-                    id='table',
-                    columns=[{"name": i, "id": i} for i in df.columns],
-                    data=df.to_dict('records'),
-                )
+                #dash_table.DataTable( 
+                #    id='table',
+                #    columns=[{"name": i, "id": i} for i in df.columns],
+                #    data=df.to_dict('records'),
+                #)
                 ], style={'width': '60%', 'margin': 'auto', 'marginTop': '20px', 'marginBottom': '20px'}),
             ], style={'fontSize': 20, 'color' : 'black'})
         ]),    
