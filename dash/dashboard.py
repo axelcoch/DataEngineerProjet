@@ -14,14 +14,16 @@ client = pymongo.MongoClient('nba_mongo:27017')
 database = client['NBA']
 collection = database['Player']
 
+df_joueur = pd.DataFrame(list(collection.find({})))["Season", "Tm", '3P', 'FG%', '3P%', '2P%','FT%', 'eFG%', "TOV", "AST", "PTS","player"]
+
 def generate_page():
     # Création de df pour l'affichage des données
     data1 = pd.DataFrame(list(collection.find({"PTS":{'$gt':26.00}})))[["Season", "PTS", "player"]]
     data2 = pd.DataFrame(list(collection.find({"AST":{'$gt':8.00}})))[["Season", "AST","player"]]
     data3 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "PTS"]]
     data4 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "AST"]]
-    data5 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "TOV"]]
-    #df_joueur = pd.DataFrame(list)
+    data5 = pd.DataFrame(list(collection.find({"TOV":{'$gt':2.80}})))[["Season", "Tm", "TOV"]]
+
 
     # Création de graphique pour l'affichage des données
     bar1 = px.bar(data1, x = "player", y = "PTS", barmode="group", facet_col="Season") 
@@ -81,13 +83,15 @@ def generate_page():
                 dcc.Dropdown(
                     id="player_option",
                     options = collection.distinct('player'),
+                    value = 'Aaron Gordon',
                     style={"textAlign" : "center", "fontSize": "20px", "color": "black", "marginBottom" : "20px"}
                 ),
-                #dash_table.DataTable( 
-                #    id='table',
-                #    columns=[{"name": i, "id": i} for i in df.columns],
-                #    data=df.to_dict('records'),
-                #)
+                dash_table.DataTable( 
+                    id='table',
+                    columns=[{"name": i, "id": i} for i in df_joueur['player'].columns],
+                    data=df_joueur['player'].to_dict('records'),
+                    style={"textAlign" : "center", "fontSize": "20px", "margin" : "auto","marginBottom" : "20px"}
+                )
                 ], style={'width': '60%', 'margin': 'auto', 'marginTop': '20px', 'marginBottom': '20px'}),
             ], style={'fontSize': 20, 'color' : 'black'})
         ]),    
@@ -95,11 +99,21 @@ def generate_page():
     )
 
 
+
+
 if __name__ == '__main__':
 
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
 
     app.layout = generate_page
+    @app.callback(Output('table', 'children'), Input('player_option', 'value'))
+    def update_graphs(value):
+        return dash_table.DataTable( 
+                id='table',
+                columns=[{"name": i, "id": i} for i in df_joueur[value].columns],
+                data=df_joueur[value].to_dict('records'),
+                style={"textAlign" : "center", "fontSize": "20px", "margin" : "auto","marginBottom" : "20px"}
+                )
 
     #
     # RUN APP
