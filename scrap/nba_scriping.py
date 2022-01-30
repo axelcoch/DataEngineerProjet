@@ -27,7 +27,7 @@ def scrap_player(urll):
     df = pd.DataFrame(columns = table_head)
 
     # Récupère le contenu du tableau (ligne de stat) et l'ajoute dans le dataframe
-    for tr in tbodys.find_all('tr', class_="full_table")[-10:]:
+    for tr in tbodys.find_all('tr', class_="full_table")[-5:]:
         tds = tr.find_all(['th', 'td'])
         row_content = [td.text for td in tds]
         row_content.append(name_player.text.strip())

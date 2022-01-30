@@ -74,7 +74,7 @@ def generate_page():
                     id = 'graph5',
                     figure = funnel
                 ),
-                html.H5('Nombre de perte de balle par équipe', style={'textAlign': 'center', 'marginTop': '40px'}),
+                html.H5('Nombre de perte de balle par joueur', style={'textAlign': 'center', 'marginTop': '40px'}),
                 dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
                     id = 'graph6',
                     figure = funnel2

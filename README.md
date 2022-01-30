@@ -35,7 +35,7 @@ $:~/<WORKDIR> > docker-compose up
 
 ### Fonctionnement du dashboard
 
-Le Dashbaord est ainsi composé d'un onglet `Statistiques générales` contenant certains graphiques utiles pour l'affichage des données.
+Le Dashbaord est ainsi composé d'un onglet `Statistiques générales` contenant certains graphiques utiles pour l'affichage des données. Ne pas hésiter à zoomer sur les joueurs.
 
 ### Compositions du projet et listes des technologies utilisés.
 
