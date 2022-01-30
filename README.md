@@ -32,5 +32,26 @@ $:~/<WORKDIR> > docker-compose up
 ```
 > Pour lancer le dashboard, il faut se rendre à l'adresse suivante `http://localhost:8050/`. 
 
+### Fonctionnement du dashboard
 
+Le Dashbaord est ainsi composé de deux parties, le premier onglet `Statistiques générales` contient certains graphiques utiles pour l'affichage des données et le deuxième onglet `statistiques joueurs` contient les lignes de stats du joueur choisie.
+
+### Compositions du projet et listes des technologies utilisés.
+
+Le projet est composé de 2 fichiers python :
+* nba_sciping.py afin de récupérer les données et de les pousser dans notre base de données.
+* dashboard.py afin d'afficher les données dans un dashboard intéractif.
+
+Pour le scraping de données, nous avons utilisé :
+* requests afin de faire nos requetes html ( requetes GET).
+* beautifulsoup (bs4) afin de parser le code que l'on a récupéré.
+
+Pour le traîtement et le stockage des données :
+* pandas pour stockés nos données dans un dataframe afin de les traîter un peu.
+* mongodb afin de stockés nos données transformées dedans pour les réutiliser plus tard.
+  
+Pour l'affichage des données :
+* Dash afin de créer un dashboard intéractif.
+* Plotly express afin de faire de mettres les données sous forme de graphique.
+  
   

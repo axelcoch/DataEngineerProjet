@@ -13,20 +13,22 @@ client = pymongo.MongoClient('nba_mongo:27017')
 database = client['NBA']
 collection = database['Player']
 
-if __name__ == '__main__':
-
+def generate_page():
     # Création de df pour l'affichage des données
     data1 = pd.DataFrame(list(collection.find({"PTS":{'$gt':26.00}})))[["Season", "PTS", "player"]]
     data2 = pd.DataFrame(list(collection.find({"AST":{'$gt':8.00}})))[["Season", "AST","player"]]
+    data3 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "PTS"]]
+    data4 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "AST"]]
+    data5 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "TOV"]]
 
     # Création de graphique pour l'affichage des données
     bar1 = px.bar(data1, x = "player", y = "PTS", barmode="group", facet_col="Season") 
     bar2 = px.bar(data2, x = "player", y = "AST", barmode="group", facet_col="Season") 
+    bar3 = px.bar(data3, x = "Tm", y = "PTS", barmode="group", facet_col="Season")
+    bar4 = px.bar(data4, x = "Tm", y = "AST", barmode="group", facet_col="Season")
+    funnel = px.funnel(data5, x = "TOV", y="Tm")
 
-
-    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
-
-    app.layout = html.Div(style={'font-family' : 'Trebuchet MS, sans-serif'}, children=[
+    return html.Div(style={'font-family' : 'Trebuchet MS, sans-serif'}, children=[
         html.Div( id="header", children=[
             html.H2(id = "titre", children=f'NBA Scraping',
                             style={'textAlign': 'center', 'color': '#FFFFFF', 'fontSize': 60}),
@@ -40,7 +42,7 @@ if __name__ == '__main__':
         ]),
 
         dcc.Tabs([
-            dcc.Tab(label='stats générale', children=[
+            dcc.Tab(label='Statistiques générales', children=[
                 html.Div(children=[
                 #html.Button('Refresh', id='Refresh', n_clicks=0),
                 html.H5('Joueurs ayant marqués plus de 26 pts par saison', style={'textAlign': 'center', 'marginTop': '40px'}),
@@ -53,9 +55,24 @@ if __name__ == '__main__':
                     id = 'graph2',
                     figure = bar2
                 ),
+                html.H5('Equipe ayant effectués marqué le plus de pts par saison', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
+                    id = 'graph3',
+                    figure = bar3
+                ),
+                html.H5('Equipe ayant effectués le plus de ast par saison', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
+                    id = 'graph4',
+                    figure = bar4
+                ),
+                html.H5('Nombre de perte de balle par équipe', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
+                    id = 'graph5',
+                    figure = funnel
+                ),
                 ]),
-            ]),
-            dcc.Tab(label='stats joueurs', children=[
+            ], style={'fontSize': 20, 'color' : 'black'}),
+            dcc.Tab(label='statistiques joueurs', children=[
                 #Création du menu déroulant pour le choix des joueurs
                 html.Div(children=[
                 html.H5('Choix du joueur', style={'textAlign': 'center', 'marginBottom': '20px'}),
@@ -64,18 +81,18 @@ if __name__ == '__main__':
                     options = collection.distinct('player'),
                     style={"textAlign" : "center", "fontSize": "20px", "color": "black"}
                 ),
-                ], style={'width': '60%', 'margin': 'auto'}),
-            ])
-        ]),
-
-        
-
-        
+                ], style={'width': '60%', 'margin': 'auto', 'marginTop': '20px', 'marginBottom': '20px'}),
+            ], style={'fontSize': 20, 'color' : 'black'})
+        ]),    
     ]
     )
 
 
-    
+if __name__ == '__main__':
+
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
+
+    app.layout = generate_page
 
     #
     # RUN APP
