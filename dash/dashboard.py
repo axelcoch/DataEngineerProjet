@@ -5,12 +5,24 @@ from dash.dependencies import Input, Output
 from dash import callback_context
 import dash_bootstrap_components as dbc
 import pymongo
+import plotly.express as px
+import pandas as pd
+
+# Connexion avec Mongodb
+client = pymongo.MongoClient('nba_mongo:27017')
+database = client['NBA']
+collection = database['Player']
 
 if __name__ == '__main__':
 
-    # Connexion avec Mongodb
-    client = pymongo.MongoClient('nba_mongo:27017')
-    database = client['NBA']
+    # Création de df pour l'affichage des données
+    data1 = pd.DataFrame(list(collection.find({"PTS":{'$gt':26.00}})))[["Season", "PTS", "player"]]
+    data2 = pd.DataFrame(list(collection.find({"AST":{'$gt':8.00}})))[["Season", "AST","player"]]
+
+    # Création de graphique pour l'affichage des données
+    bar1 = px.bar(data1, x = "player", y = "PTS", barmode="group", facet_col="Season") 
+    bar2 = px.bar(data2, x = "player", y = "AST", barmode="group", facet_col="Season") 
+
 
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
 
@@ -27,22 +39,41 @@ if __name__ == '__main__':
                         style={'textAlign': 'center', 'color': '#FFFFFF', 'marginBottom': "100px"}),
         ]),
 
-        #Création du menu déroulant pour le choix des années
-        html.Div(children=[
-            html.Label('Choix du joueur', style={'textAlign': 'center', 'marginBottom': '20px'}),
-            dcc.Dropdown(
-                id="player_option",
-                options = [
-                {'label': '2016', 'value': 2016},
-                {'label': '2017', 'value': 2017},
-                {'label': '2018', 'value': 2018}
-                ],
+        dcc.Tabs([
+            dcc.Tab(label='stats générale', children=[
+                html.Div(children=[
+                #html.Button('Refresh', id='Refresh', n_clicks=0),
+                html.H5('Joueurs ayant marqués plus de 26 pts par saison', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px'},
+                    id = 'graph1',
+                    figure = bar1
+                ),
+                html.H5('Joueurs ayant effectués plus de 7 ast par saison', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
+                    id = 'graph2',
+                    figure = bar2
+                ),
+                ]),
+            ]),
+            dcc.Tab(label='stats joueurs', children=[
+                #Création du menu déroulant pour le choix des joueurs
+                html.Div(children=[
+                html.H5('Choix du joueur', style={'textAlign': 'center', 'marginBottom': '20px'}),
+                dcc.Dropdown(
+                    id="player_option",
+                    options = collection.distinct('player'),
+                    style={"textAlign" : "center", "fontSize": "20px", "color": "black"}
+                ),
+                ], style={'width': '60%', 'margin': 'auto'}),
+            ])
+        ]),
 
-                style={"textAlign" : "center", "fontSize": "20px", "color": "black"}
-            ),
-        ], style={'width': '60%', 'margin': 'auto'}),
+        
+
+        
     ]
     )
+
 
     
 

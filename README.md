@@ -18,5 +18,19 @@ $:~/> cd <WORKDIR>
 $:~/<WORKDIR> > git clone https://github.com/axelcoch/DataEngineerProjet.git
 $:~/<WORKDIR> > cd DataEngineerProjet/
 $:~/<WORKDIR> > ls
-Dockerfile  docker-compose.yml  dashboard.py  README.md  nba_scriping.py  requirements.txt
+dash  docker-compose.yml  scrap  README.md 
 ```
+
+### Lancement du projet
+
+Avant de faire les manipulations suivantes, il faut s'assurer que [docker](https://docs.docker.com/get-docker/) soit bien installé. 
+Ensuite mettez vous dans le bon répertoire et lancé la commande `docker-compose up`. Cette commande vas lancer l'environnement.
+```
+$:~/> cd <WORKDIR>
+$:~/<WORKDIR> > cd DataEngineerProjet/
+$:~/<WORKDIR> > docker-compose up
+```
+> Pour lancer le dashboard, il faut se rendre à l'adresse suivante `http://localhost:8050/`. 
+
+
+  

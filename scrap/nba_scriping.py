@@ -13,7 +13,7 @@ def scrap_player(urll):
         return: dataframe contenant l'ensemble de ses stats sur ses 5 derniers saisons
     """
     # Récupère et parse la page
-    response = requests.get(urll, timeout=6)
+    response = requests.get(urll, timeout=20)
     soup2 = BeautifulSoup(response.content, 'lxml')
     theads = soup2.find('thead')
     tbodys = soup2.find('tbody')
@@ -27,7 +27,7 @@ def scrap_player(urll):
     df = pd.DataFrame(columns = table_head)
 
     # Récupère le contenu du tableau (ligne de stat) et l'ajoute dans le dataframe
-    for tr in tbodys.find_all('tr', class_="full_table")[-5:]:
+    for tr in tbodys.find_all('tr', class_="full_table")[-10:]:
         tds = tr.find_all(['th', 'td'])
         row_content = [td.text for td in tds]
         row_content.append(name_player.text.strip())
@@ -35,7 +35,7 @@ def scrap_player(urll):
         df.loc[length] = row_content
 
     # Convertit certaine colonne du datframe en numeric
-    toNumeric = ['G', 'GS', 'MP', 'FG', 'FGA', '3P', '3PA', 'FT', 'FTA', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'FG%', '3P%', 'FT%', 'eFG%']
+    toNumeric = ['G', 'GS', 'MP', 'FG', 'FGA', '3P', '3PA', '2P', '2PA', 'FT', 'FTA', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'FG%', '3P%', '2P%','FT%', 'eFG%']
     for i in toNumeric:
         df[i] = pd.to_numeric(df[i], errors = 'coerce')
     # Convertit la date
