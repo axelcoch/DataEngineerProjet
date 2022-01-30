@@ -14,8 +14,6 @@ client = pymongo.MongoClient('nba_mongo:27017')
 database = client['NBA']
 collection = database['Player']
 
-df_joueur = pd.DataFrame(list(collection.find({})))["Season", "Tm", '3P', 'FG%', '3P%', '2P%','FT%', 'eFG%', "TOV", "AST", "PTS","player"]
-
 def generate_page():
     # Création de df pour l'affichage des données
     data1 = pd.DataFrame(list(collection.find({"PTS":{'$gt':26.00}})))[["Season", "PTS", "player"]]
@@ -23,6 +21,7 @@ def generate_page():
     data3 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "PTS"]]
     data4 = pd.DataFrame(list(collection.find({})))[["Season", "Tm", "AST"]]
     data5 = pd.DataFrame(list(collection.find({"TOV":{'$gt':2.80}})))[["Season", "Tm", "TOV"]]
+    data6 = pd.DataFrame(list(collection.find({"TOV":{'$gt':3.50}})))[["Season", "player", "TOV"]]
 
 
     # Création de graphique pour l'affichage des données
@@ -31,6 +30,7 @@ def generate_page():
     bar3 = px.bar(data3, x = "Tm", y = "PTS", barmode="group", facet_col="Season")
     bar4 = px.bar(data4, x = "Tm", y = "AST", barmode="group", facet_col="Season")
     funnel = px.funnel(data5, x = "TOV", y="Tm")
+    funnel2 = px.funnel(data6, x = "TOV", y="player")
 
     return html.Div(style={'font-family' : 'Trebuchet MS, sans-serif'}, children=[
         html.Div( id="header", children=[
@@ -74,26 +74,13 @@ def generate_page():
                     id = 'graph5',
                     figure = funnel
                 ),
+                html.H5('Nombre de perte de balle par équipe', style={'textAlign': 'center', 'marginTop': '40px'}),
+                dcc.Graph(style={'backgroundColor' : '#EFDDBC', 'width' : '80%', 'margin' : 'auto', 'marginTop' : '20px', 'marginBottom' : '20px'},
+                    id = 'graph6',
+                    figure = funnel2
+                ),
                 ]),
             ], style={'fontSize': 20, 'color' : 'black'}),
-            dcc.Tab(label='statistiques joueurs', children=[
-                #Création du menu déroulant pour le choix des joueurs
-                html.Div(children=[
-                html.H5('Choix du joueur', style={'textAlign': 'center', 'marginBottom': '20px'}),
-                dcc.Dropdown(
-                    id="player_option",
-                    options = collection.distinct('player'),
-                    value = 'Aaron Gordon',
-                    style={"textAlign" : "center", "fontSize": "20px", "color": "black", "marginBottom" : "20px"}
-                ),
-                dash_table.DataTable( 
-                    id='table',
-                    columns=[{"name": i, "id": i} for i in df_joueur['player'].columns],
-                    data=df_joueur['player'].to_dict('records'),
-                    style={"textAlign" : "center", "fontSize": "20px", "margin" : "auto","marginBottom" : "20px"}
-                )
-                ], style={'width': '60%', 'margin': 'auto', 'marginTop': '20px', 'marginBottom': '20px'}),
-            ], style={'fontSize': 20, 'color' : 'black'})
         ]),    
     ]
     )
@@ -104,16 +91,6 @@ def generate_page():
 if __name__ == '__main__':
 
     app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY]) 
-
-    app.layout = generate_page
-    @app.callback(Output('table', 'children'), Input('player_option', 'value'))
-    def update_graphs(value):
-        return dash_table.DataTable( 
-                id='table',
-                columns=[{"name": i, "id": i} for i in df_joueur[value].columns],
-                data=df_joueur[value].to_dict('records'),
-                style={"textAlign" : "center", "fontSize": "20px", "margin" : "auto","marginBottom" : "20px"}
-                )
 
     #
     # RUN APP
